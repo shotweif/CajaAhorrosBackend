@@ -1,0 +1,6 @@
+@CajaAhorrosBackend_HostAddress = http://localhost:5150
+
+GET {{CajaAhorrosBackend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
