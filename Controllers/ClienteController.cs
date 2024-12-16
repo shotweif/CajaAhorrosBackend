@@ -1,37 +1,92 @@
-using System;
-using System.Text;
-using Konscious.Security.Cryptography;
-using CajaAhorrosBackend.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Cryptography;
+using CajaAhorrosBackend.Models;
 using CajaAhorrosBackend.Services;
 
-// namespace CajaAhorrosBackend.Controllers
-// {
+namespace CajaAhorrosBackend.Controllers
+{
     [ApiController]
     [Route("api/[controller]")]
-    public class ClienteController : ControllerBase
+    public class ClientesController : ControllerBase
     {
-        // private readonly ClienteService _clientService;
-        // // private readonly ApplicationDbContext _context;  
+        private readonly ClienteService _cliente;
 
-        // public ClienteController(Cliente cliente)
+        public ClientesController(ClienteService client)
+        {
+            _cliente = client;
+        }
+
+        [HttpPost("Register")]
+        public async Task<IActionResult> Register([FromBody] Cliente cliente)
+        {
+            Console.WriteLine("Se va a crear.");
+
+            try
+            {
+                if (cliente == null || string.IsNullOrEmpty(cliente.Nombre))
+                {
+                    return BadRequest(new { Message = "Invalid data." });
+                }
+
+                var result = await _cliente.CreateClientAsync(cliente);
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error starting the proces: {ex.Message}");
+                return StatusCode(500, new { Message = "An error occured while starting the process" });
+            }
+
+            // cliente.Rol = "Cliente";
+            // cliente.Password = _passwordService.HashPassword(cliente.Password);
+            // _context.Clientes.Add(cliente);
+            // await _context.SaveChangesAsync();
+            // return Ok(cliente);
+        }
+
+
+
+        // private readonly ClienteService _cliente;
+        // private readonly ApplicationDbContext _context;
+
+        // public ClienteController(ClienteService cliente, ApplicationDbContext context)
         // {
-        //     Console.WriteLine(cliente);
-        //     _clientService = cliente;
-        // //     _context = context;
+        //     _cliente = cliente;
+        //     // _context = context;
         // }
 
-        [HttpPost("create")]
-        public IActionResult SatrtCreateUser([FromBody] Cliente cliente)
-        {
-            Console.WriteLine("Se accesio.");
-            return Ok(new {Message = "Coneccion corecta."});
-        }
+        // [HttpPost("create")]
+        // public async Task<IActionResult> StartCreateUser([FromBody] Cliente cliente)
+        // {
+        //     try
+        //     {
+        //         if (cliente == null || string.IsNullOrEmpty(cliente.Nombre))
+        //         {
+        //             return BadRequest(new { Message = "Invalid data." });
+        //         }
+        //         var result = _cliente.CreateClient(cliente);
+
+        //         return result;
+
+        //         // return Ok(new { Message = "Process started." });
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         Console.Error.WriteLine($"Error starting the proces: {ex.Message}");
+        //         return StatusCode(500, new { Message = "An error occured while starting the process" });
+        //     }
+        // }
+
+
+
+
+
+
+
         // public IActionResult CreateCliente([FromBody] Cliente cliente)
         // {
-            // Lógica para crear el cliente
-            // return CreatedAtAction(nameof(CreateCliente), new { id = cliente.IdCliente }, cliente);
+        // Lógica para crear el cliente
+        // return CreatedAtAction(nameof(CreateCliente), new { id = cliente.IdCliente }, cliente);
         // }
 
         // [HttpPost("create")]
@@ -81,4 +136,4 @@ using CajaAhorrosBackend.Services;
         // }
     }
 
-// }
+}

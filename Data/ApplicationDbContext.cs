@@ -1,30 +1,17 @@
-using Microsoft.EntityFrameworkCore;
 using CajaAhorrosBackend.Models;
-using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.EntityFrameworkCore;
 
-public class ApplicationDbContext : DbContext
+namespace CajaAhorrosBackend.Data
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-        : base(options) { }
+    // dotnet ef migrations add InitialCreate
+    // dotnet ef database update
 
-    public DbSet<Cliente> Clientes { get; set; }
-    public DbSet<CuentaAhorro> CuentasAhorro { get; set; }
-    public DbSet<Transaccion> Transacciones { get; set; }
-}
-
-public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
-{
-    public ApplicationDbContext CreateDbContext(string[] args)
+    public class ApplicationDbContext : DbContext
     {
-        var configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json")
-            .Build();
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
-        var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-        optionsBuilder.UseMySql(configuration.GetConnectionString("DefaultConnection"),
-            new MySqlServerVersion(new Version(8, 0, 32)));
-
-        return new ApplicationDbContext(optionsBuilder.Options);
+        public DbSet<Cliente> Clientes { get; set; }
+        public DbSet<CuentaAhorro> CuentasAhorro { get; set; }
+        public DbSet<Transaccion> Transacciones { get; set; }
     }
 }

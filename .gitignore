@@ -1,0 +1,18 @@
+# Ignorar archivos de salida
+bin/
+obj/
+Keys/
+
+# Ignorar archivos de configuración local
+*.user
+*.suo
+*.tmp
+*.db
+
+# Ignorar archivos de caché
+.vs/
+packages/
+
+# Ignorar archivos generados por herramientas
+*.log
+*.bak
