@@ -17,4 +17,12 @@ namespace CajaAhorrosBackend.Models
 
         public required string Rol { get; set; }
     }
+    
+    public class LoginRequest
+    {
+        public required string CorreoElectronico { get; set; }
+
+        public required string Password { get; set; }
+
+    }
 }

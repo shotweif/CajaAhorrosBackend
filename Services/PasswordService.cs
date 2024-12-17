@@ -7,21 +7,20 @@ namespace CajaAhorrosBackend.Services
     {
         public string HashPassword(string password)
         {
-            using (var hasher = new Argon2id(Encoding.UTF8.GetBytes(password)))
+            using (var argon2 = new Argon2id(Encoding.UTF8.GetBytes(password)))
             {
-                hasher.Salt = Encoding.UTF8.GetBytes("unique_salt");
-                hasher.DegreeOfParallelism = 8; // Número de threads
-                hasher.MemorySize = 65536;     // Tamaño de memoria en KB
-                hasher.Iterations = 4;        // Número de iteraciones
+                argon2.Salt = Encoding.UTF8.GetBytes("TuClaveDeSalSegura");
+                argon2.DegreeOfParallelism = 8; // Número de hilos
+                argon2.MemorySize = 65536; // Memoria en KB
+                argon2.Iterations = 4; // Iteraciones
 
-                return Convert.ToBase64String(hasher.GetBytes(32));
+                return Convert.ToBase64String(argon2.GetBytes(32)); // Hash de 32 bytes
             }
         }
 
-        public bool VerifyPassword(string password, string hash)
+        public bool VerifyPassword(string hashedPassword, string inputPassword)
         {
-            var hashedInput = HashPassword(password);
-            return hashedInput == hash;
+            return HashPassword(inputPassword) == hashedPassword;
         }
     }
 }

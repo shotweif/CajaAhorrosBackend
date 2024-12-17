@@ -18,8 +18,6 @@ namespace CajaAhorrosBackend.Controllers
         [HttpPost("Register")]
         public async Task<IActionResult> Register([FromBody] Cliente cliente)
         {
-            Console.WriteLine("Se va a crear.");
-
             try
             {
                 if (cliente == null || string.IsNullOrEmpty(cliente.Nombre))
@@ -28,6 +26,7 @@ namespace CajaAhorrosBackend.Controllers
                 }
 
                 var result = await _cliente.CreateClientAsync(cliente);
+                Console.WriteLine($"Se va a crear el usuario {cliente.CorreoElectronico}");
 
                 return result;
             }
@@ -36,14 +35,30 @@ namespace CajaAhorrosBackend.Controllers
                 Console.Error.WriteLine($"Error starting the proces: {ex.Message}");
                 return StatusCode(500, new { Message = "An error occured while starting the process" });
             }
-
-            // cliente.Rol = "Cliente";
-            // cliente.Password = _passwordService.HashPassword(cliente.Password);
-            // _context.Clientes.Add(cliente);
-            // await _context.SaveChangesAsync();
-            // return Ok(cliente);
         }
 
+        [HttpPost("Login")]
+        public async Task<IActionResult> Login([FromBody] LoginRequest request)
+        {
+            try
+            {
+                if (request == null || string.IsNullOrEmpty(request.CorreoElectronico) || string.IsNullOrEmpty(request.Password))
+                {
+                    return BadRequest(new { Message = "Invalid data." });
+                }
+
+                var result = await _cliente.ValidateClientAsync(request);
+                Console.WriteLine($"Se valido el usuario {request.CorreoElectronico}");
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                
+                Console.Error.WriteLine($"Error starting the proces: {ex.Message}");
+                return StatusCode(500, new { Message = "An error occured while starting the process" });
+            }
+        }
 
 
         // private readonly ClienteService _cliente;
