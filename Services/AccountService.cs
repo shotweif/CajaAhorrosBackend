@@ -68,14 +68,21 @@ namespace CajaAhorrosBackend.Services
 
         public async Task<IActionResult> ValidateAccountNumber(string accountNumber)
         {
-            var cuentaExiste = await _context.CuentasAhorro.AnyAsync(c => c.NumeroCuenta == accountNumber);
-            if (cuentaExiste)
+            try
             {
-                return Ok(new { success = true });
+                var cuentaExiste = await _context.CuentasAhorro.Where(c => c.Activo == true).AnyAsync(c => c.NumeroCuenta == accountNumber);
+
+                if (cuentaExiste)
+                {
+                    return Ok(new { success = true });
+                }
+                return Ok(new { success = false, message = "La cuenta no existe o esta temporalmente desabilidata." });
+
             }
-            else
+            catch (Exception ex)
             {
-                return Ok(new { success = false });
+                Console.WriteLine("An error occurred: ", ex);
+                return Ok(new { message = "Error al crear el cliente: ", ex });
             }
         }
         public async Task<IActionResult> TransferirFondos(TransferenciaDto transferencia)
@@ -113,7 +120,7 @@ namespace CajaAhorrosBackend.Services
                 Monto = transferencia.Monto,
                 FechaTransaccion = DateTime.Now
             };
-            
+
             _context.Transacciones.Add(newTransferencia);
             await _context.SaveChangesAsync();
 

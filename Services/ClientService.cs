@@ -79,6 +79,7 @@ namespace CajaAhorrosBackend.Services
                     cliente.CorreoElectronico,
                     cliente.Nombre,
                     cliente.Phone,
+                    cliente.Apellido,
                     cliente.Rol,
                     cliente.UltimaFechaLogin
                 });

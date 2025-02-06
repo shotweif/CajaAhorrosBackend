@@ -115,7 +115,6 @@ namespace CajaAhorrosBackend.Controllers
         [HttpGet("ConsultarCuentas/{userId}")]
         public async Task<IActionResult> GetConsultarCuentas(int userId)
         {
-            Console.WriteLine("Si llego ------>");
             try
             {
                 if (userId == 0)
@@ -138,6 +137,9 @@ namespace CajaAhorrosBackend.Controllers
         public async Task<IActionResult> ValidatCuenta(string accountNumber)
         {
             Console.WriteLine(accountNumber);
+            if(accountNumber.Length < 1){
+                    return Unauthorized(new { message = "Numero de cuenta no valido." });
+            }
             try
             {
                 var result = await _cuenta.ValidateAccountNumber(accountNumber);
