@@ -157,13 +157,14 @@ namespace CajaAhorrosBackend.Controllers
         {
             try
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
+                // if (!ModelState.IsValid)
+                // {
+                //     return BadRequest(ModelState);
+                // }
                 
                 var result = await _cuenta.TransferirFondos(transferencia);
                 return result;
+                // return Ok(new { success = true, message = "Transferencia realizada exitosamente.", transferencia });
 
                 // Procesar la transferencia
                 // return Ok($"Transferencia realizada con éxito.");

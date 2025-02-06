@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CajaAhorrosBackend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+367186cff9d92e6ee880e5674623ae14883642b0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+56332f1e9c937860a71760bc971da2ed541ab6a5")]
 [assembly: System.Reflection.AssemblyProductAttribute("CajaAhorrosBackend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CajaAhorrosBackend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

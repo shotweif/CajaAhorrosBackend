@@ -70,12 +70,14 @@ namespace CajaAhorrosBackend.Services
         {
             try
             {
-                var cuentaExiste = await _context.CuentasAhorro.Where(c => c.Activo == true).AnyAsync(c => c.NumeroCuenta == accountNumber);
+                var cuentaExiste = await _context.CuentasAhorro.Where(c => c.Activo == true).FirstOrDefaultAsync(c => c.NumeroCuenta == accountNumber);
 
-                if (cuentaExiste)
+                if (cuentaExiste != null)
                 {
-                    return Ok(new { success = true });
+                    var DuenioCuenta = await _context.Clientes.FirstOrDefaultAsync(c => c.IdCliente == cuentaExiste.IdUsuario);
+                    return Ok(new { success = true, dataRes = DuenioCuenta.Apellido+" "+DuenioCuenta.Nombre });
                 }
+
                 return Ok(new { success = false, message = "La cuenta no existe o esta temporalmente desabilidata." });
 
             }
@@ -113,18 +115,22 @@ namespace CajaAhorrosBackend.Services
             cuentaOrigen.Saldo -= transferencia.Monto;
             cuentaDestino.Saldo += transferencia.Monto;
 
+            await _context.SaveChangesAsync();
+
+            var FechaMovimiento = DateTime.UtcNow;
             var newTransferencia = new Transaccion
             {
                 IdCuentaOrigen = transferencia.IdCuentaOrigen,
                 IdCuentaDestino = transferencia.IdCuentaDestino,
                 Monto = transferencia.Monto,
-                FechaTransaccion = DateTime.Now
+                FechaTransaccion = FechaMovimiento
             };
 
             _context.Transacciones.Add(newTransferencia);
             await _context.SaveChangesAsync();
+            var newTransferenciaId = newTransferencia.IdTransaccion;
 
-            return Ok(new { success = true, message = "Transferencia realizada exitosamente." });
+            return Ok(new { success = true, message = "Transferencia realizada exitosamente.", dataRes = FechaMovimiento, newTransferenciaId });
         }
     }
 
