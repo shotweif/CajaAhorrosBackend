@@ -113,8 +113,9 @@ namespace CajaAhorrosBackend.Controllers
         }
 
         [HttpGet("ConsultarCuentas/{userId}")]
-        public async Task<IActionResult> ConsultarCuentas(int userId)
+        public async Task<IActionResult> GetConsultarCuentas(int userId)
         {
+            Console.WriteLine("Si llego ------>");
             try
             {
                 if (userId == 0)
