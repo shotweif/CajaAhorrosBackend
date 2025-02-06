@@ -10,10 +10,11 @@
 using System;
 using System.Reflection;
 
+[assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("d44e7e50-b880-429d-a4b7-a493e746ae1f")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("CajaAhorrosBackend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a9c69daad4caae39a09092f5e35bb2400e203934")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d174e643c83a65d6a36db2fb64805e28f1ffde20")]
 [assembly: System.Reflection.AssemblyProductAttribute("CajaAhorrosBackend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CajaAhorrosBackend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

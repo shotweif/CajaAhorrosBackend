@@ -7,9 +7,9 @@ namespace CajaAhorrosBackend.Models
         [Key]
         public int IdTransaccion { get; set; }
 
-        public int IdCuenta { get; set; }
+        public string IdCuentaOrigen { get; set; }
 
-        public int TipoTransaccion { get; set; }
+        public string IdCuentaDestino { get; set; }
 
         public float Monto { get; set; }
 

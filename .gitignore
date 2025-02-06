@@ -16,3 +16,4 @@ packages/
 # Ignorar archivos generados por herramientas
 *.log
 *.bak
+.fake

@@ -1,0 +1,7 @@
+Actualiza la base de datos para reflejar los cambios en las relaciones:
+    dotnet ef migrations add AddClientAccountRelation
+    dotnet ef database update
+
+
+    dotnet ef migrations add AddUltimaFechaLogin
+    dotnet ef database update

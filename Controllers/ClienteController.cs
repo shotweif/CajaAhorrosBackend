@@ -1,6 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using CajaAhorrosBackend.Models;
 using CajaAhorrosBackend.Services;
+using Microsoft.AspNetCore.Authorization;
+using System.Text.Json;
+using System.Security.Claims;
+using System.Text;
 
 namespace CajaAhorrosBackend.Controllers
 {
@@ -9,13 +13,15 @@ namespace CajaAhorrosBackend.Controllers
     public class ClientesController : ControllerBase
     {
         private readonly ClienteService _cliente;
+        private readonly AccountService _cuenta;
 
-        public ClientesController(ClienteService client)
+        public ClientesController(ClienteService client, AccountService account)
         {
             _cliente = client;
+            _cuenta = account;
         }
 
-        [HttpPost("Register")]
+        [HttpPost("Register")] // Registrar usuario
         public async Task<IActionResult> Register([FromBody] Cliente cliente)
         {
             try
@@ -25,8 +31,8 @@ namespace CajaAhorrosBackend.Controllers
                     return BadRequest(new { Message = "Invalid data." });
                 }
 
-                var result = await _cliente.CreateClientAsync(cliente);
                 Console.WriteLine($"Se va a crear el usuario {cliente.CorreoElectronico}");
+                var result = await _cliente.CreateClientAsync(cliente);
 
                 return result;
             }
@@ -37,7 +43,7 @@ namespace CajaAhorrosBackend.Controllers
             }
         }
 
-        [HttpPost("Login")]
+        [HttpPost("Login")] // Iniciar sesion 
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
             try
@@ -54,101 +60,163 @@ namespace CajaAhorrosBackend.Controllers
             }
             catch (Exception ex)
             {
-                
+                Console.Error.WriteLine($"Error starting the proces: {ex.Message}");
+                return StatusCode(500, new { Message = "An error occured while starting the process" });
+            }
+        }
+
+        // [Authorize]
+        [HttpGet("Perfil/{userWebId}")] // Trae la cuenta del usuario
+        public async Task<IActionResult> GetPerfilUsuario(string userWebId)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(userWebId))
+                {
+                    return BadRequest(new { message = "Usuario no autorizado." });
+                }
+
+                var result = await _cliente.UserProfile(userWebId);
+                Console.WriteLine($"data retornada: {result}");
+
+                return result;
+            }
+            catch (Exception ex)
+            {
                 Console.Error.WriteLine($"Error starting the proces: {ex.Message}");
                 return StatusCode(500, new { Message = "An error occured while starting the process" });
             }
         }
 
 
-        // private readonly ClienteService _cliente;
-        // private readonly ApplicationDbContext _context;
+        [HttpPost("CrearCuenta/{userId}")]
+        public async Task<IActionResult> CrearCuenta(int userId)
+        {
+            try
+            {
+                if (userId == 0)
+                {
+                    return Unauthorized(new { message = "Usuario no autorizado." });
+                }
 
-        // public ClienteController(ClienteService cliente, ApplicationDbContext context)
-        // {
-        //     _cliente = cliente;
-        //     // _context = context;
-        // }
+                var result = await _cuenta.CreateNewAccount(userId);
+                return result;
+                // return Ok(new { success = true });
 
-        // [HttpPost("create")]
-        // public async Task<IActionResult> StartCreateUser([FromBody] Cliente cliente)
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error starting the proces: {ex.Message}");
+                return StatusCode(500, new { Message = "An error occured while starting the process" });
+            }
+
+        }
+
+        [HttpGet("ConsultarCuentas/{userId}")]
+        public async Task<IActionResult> ConsultarCuentas(int userId)
+        {
+            try
+            {
+                if (userId == 0)
+                {
+                    return Unauthorized(new { message = "Usuario no autorizado." });
+                }
+
+                var result = await _cuenta.ShowAccounts(userId);
+                return result;
+                // return Ok(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error starting the proces: {ex.Message}");
+                return StatusCode(500, new { Message = "An error occured while starting the process" });
+            }
+        }
+
+        [HttpGet("Validar/{accountNumber}")]
+        public async Task<IActionResult> ValidatCuenta(string accountNumber)
+        {
+            Console.WriteLine(accountNumber);
+            try
+            {
+                var result = await _cuenta.ValidateAccountNumber(accountNumber);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error starting the proces: {ex.Message}");
+                return StatusCode(500, new { Message = "An error occured while starting the process" });
+            }
+        }
+
+        [HttpPost("IniciarTransferencia")]
+        public async Task<IActionResult> IniciarTransferenciaAsync([FromBody] TransferenciaDto transferencia)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+                
+                var result = await _cuenta.TransferirFondos(transferencia);
+                return result;
+
+                // Procesar la transferencia
+                // return Ok($"Transferencia realizada con éxito.");
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error starting the proces: {ex.Message}");
+                return StatusCode(500, new { Message = "An error occured while starting the process" });
+            }
+        }
+
+        // [HttpPost("IniciarTranferencia")]
+        // public async Task<IActionResult> IniciarTransferencia([FromBody] string IdCuentaOrigen)
         // {
-        //     try
         //     {
-        //         if (cliente == null || string.IsNullOrEmpty(cliente.Nombre))
+        //         try
         //         {
-        //             return BadRequest(new { Message = "Invalid data." });
+        //             Console.WriteLine($"\nDesde: {IdCuentaOrigen}\nHacia: \nMonto: ");
+        //             // return Ok(new { success = true, message = "Transferencia realizada exitosamente." });
+
+        //             var result = await _cuenta.TransferirFondos(IdCuentaOrigen );
+        //             return result;
         //         }
-        //         var result = _cliente.CreateClient(cliente);
-
-        //         return result;
-
-        //         // return Ok(new { Message = "Process started." });
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         Console.Error.WriteLine($"Error starting the proces: {ex.Message}");
-        //         return StatusCode(500, new { Message = "An error occured while starting the process" });
+        //         catch (Exception ex)
+        //         {
+        //             Console.Error.WriteLine($"Error starting the proces: {ex.Message}");
+        //             return StatusCode(500, new { Message = "An error occured while starting the process" });
+        //         }
         //     }
         // }
 
-
-
-
-
-
-
-        // public IActionResult CreateCliente([FromBody] Cliente cliente)
+        // [HttpPost("IniciarTranferencia")]
+        // public IActionResult Transfair([FromBody] string IdCuentaOrigen, string IdCuentaDestino, float Monto)
         // {
-        // Lógica para crear el cliente
-        // return CreatedAtAction(nameof(CreateCliente), new { id = cliente.IdCliente }, cliente);
+        //     Console.WriteLine($"\nDesde: {IdCuentaOrigen}\nHacia: {IdCuentaDestino}\nMonto: {Monto}");
+        //     return Ok(new { success = true, message = "Transferencia realizada exitosamente." });
+        //     // try
+        //     // {
+        //     //     // Console.WriteLine($"SE DEBE ESTAR REALIZANDO\n");
+
+        //     //     var result = await _cuenta.TransferirFondos(IdCuentaOrigen, IdCuentaDestino, Monto);
+        //     //     return result;
+        //     // }
+        //     // catch (Exception ex)
+        //     // {
+        //     //     Console.Error.WriteLine($"Error starting the proces: {ex.Message}");
+        //     //     return StatusCode(500, new { Message = "An error occured while starting the process" });
+        //     // }
         // }
 
-        // [HttpPost("create")]
-        // public async Task<IActionResult> CreateCliente(Cliente cliente)
-        // {
-        //     Console.WriteLine("Entramos a crear");
-        //     cliente.Password = GenerateArgon2Hash(cliente.Password);
-        //     _context.Clientes.Add(cliente);
-        //     await _context.SaveChangesAsync();
-        //     return Ok(new { message = "Cliente creado exitosamente." });
-        // }
+        [Authorize]
+        [HttpGet]
+        public IActionResult GetProtectedData()
+        {
+            return Ok(new { message = "Este es un recurso protegido" });
+        }
 
-        // private string GenerateMD5(string input)
-        // {
-        //     using var md5 = System.Security.Cryptography.MD5.Create();
-        //     byte[] inputBytes = System.Text.Encoding.ASCII.GetBytes(input);
-        //     byte[] hashBytes = md5.ComputeHash(inputBytes);
-        //     return Convert.ToHexString(hashBytes);
-        // }
-
-        // private string GenerateArgon2Hash(string input)
-        // {
-        //     Console.WriteLine("Entramos a crear");
-
-        //     // Convertir la entrada en bytes
-        //     byte[] salt = GenerateSalt(); // Debes generar un salt único para cada usuario
-        //     byte[] inputBytes = Encoding.UTF8.GetBytes(input);
-
-        //     using (var argon2 = new Argon2id(inputBytes))
-        //     {
-        //         argon2.Salt = salt;
-        //         argon2.DegreeOfParallelism = 8; // Ajuste de acuerdo con los recursos de hardware
-        //         argon2.MemorySize = 65536; // 64 MB
-        //         argon2.Iterations = 4;     // Iteraciones para mayor seguridad
-
-        //         byte[] hashBytes = argon2.GetBytes(32); // Tamaño del hash en bytes
-        //         return Convert.ToBase64String(hashBytes);
-        //     }
-        // }
-
-        // private byte[] GenerateSalt()
-        // {
-        //     Console.WriteLine("Entramos a crear");
-
-        //     // Generar un salt aleatorio de 16 bytes
-        //     return RandomNumberGenerator.GetBytes(16);
-        // }
     }
-
 }

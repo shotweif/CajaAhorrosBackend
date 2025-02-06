@@ -14,8 +14,10 @@ namespace CajaAhorrosBackend.Models
         public required string CorreoElectronico { get; set; }
 
         public required string Password { get; set; }
+        
+        public DateTime? UltimaFechaLogin { get; set; }
 
-        public required string Rol { get; set; }
+        public string? Rol { get; set; }
     }
     
     public class LoginRequest

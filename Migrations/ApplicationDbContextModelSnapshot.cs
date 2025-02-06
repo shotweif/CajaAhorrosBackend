@@ -45,8 +45,10 @@ namespace CajaAhorrosBackend.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Rol")
-                        .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTime?>("UltimaFechaLogin")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("IdCliente");
 
@@ -61,13 +63,22 @@ namespace CajaAhorrosBackend.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdCuenta"));
 
+                    b.Property<bool>("Activo")
+                        .HasColumnType("boolean");
+
                     b.Property<int>("IdUsuario")
                         .HasColumnType("integer");
+
+                    b.Property<string>("NumeroCuenta")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<float>("Saldo")
                         .HasColumnType("real");
 
                     b.HasKey("IdCuenta");
+
+                    b.HasIndex("IdUsuario");
 
                     b.ToTable("CuentasAhorro");
                 });
@@ -83,18 +94,31 @@ namespace CajaAhorrosBackend.Migrations
                     b.Property<DateTime>("FechaTransaccion")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("IdCuenta")
-                        .HasColumnType("integer");
+                    b.Property<string>("IdCuentaDestino")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("IdCuentaOrigen")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<float>("Monto")
                         .HasColumnType("real");
 
-                    b.Property<int>("TipoTransaccion")
-                        .HasColumnType("integer");
-
                     b.HasKey("IdTransaccion");
 
                     b.ToTable("Transacciones");
+                });
+
+            modelBuilder.Entity("CajaAhorrosBackend.Models.CuentaAhorro", b =>
+                {
+                    b.HasOne("CajaAhorrosBackend.Models.Cliente", "Cliente")
+                        .WithMany()
+                        .HasForeignKey("IdUsuario")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cliente");
                 });
 #pragma warning restore 612, 618
         }

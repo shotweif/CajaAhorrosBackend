@@ -1,32 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\shotweif Geng\\Desktop\\CODE\\backendUPS\\CajaAhorrosBackend\\CajaAhorrosBackend.csproj": {}
+    "F:\\Users\\Shotweif\\CODE\\Git UPS\\CajaAhorrosBackend\\CajaAhorrosBackend.csproj": {}
   },
   "projects": {
-    "C:\\Users\\shotweif Geng\\Desktop\\CODE\\backendUPS\\CajaAhorrosBackend\\CajaAhorrosBackend.csproj": {
+    "F:\\Users\\Shotweif\\CODE\\Git UPS\\CajaAhorrosBackend\\CajaAhorrosBackend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\shotweif Geng\\Desktop\\CODE\\backendUPS\\CajaAhorrosBackend\\CajaAhorrosBackend.csproj",
+        "projectUniqueName": "F:\\Users\\Shotweif\\CODE\\Git UPS\\CajaAhorrosBackend\\CajaAhorrosBackend.csproj",
         "projectName": "CajaAhorrosBackend",
-        "projectPath": "C:\\Users\\shotweif Geng\\Desktop\\CODE\\backendUPS\\CajaAhorrosBackend\\CajaAhorrosBackend.csproj",
-        "packagesPath": "C:\\Users\\shotweif Geng\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\shotweif Geng\\Desktop\\CODE\\backendUPS\\CajaAhorrosBackend\\obj\\",
+        "projectPath": "F:\\Users\\Shotweif\\CODE\\Git UPS\\CajaAhorrosBackend\\CajaAhorrosBackend.csproj",
+        "packagesPath": "C:\\Users\\sshot\\.nuget\\packages\\",
+        "outputPath": "F:\\Users\\Shotweif\\CODE\\Git UPS\\CajaAhorrosBackend\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\shotweif Geng\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\sshot\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -88,6 +81,14 @@
               "target": "Package",
               "version": "[9.0.2, )"
             },
+            "Serilog.AspNetCore": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "Serilog.Settings.Configuration": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.4.0, )"
@@ -112,7 +113,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.400/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.405/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
