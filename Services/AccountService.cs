@@ -2,6 +2,7 @@ using CajaAhorrosBackend.Models;
 using Microsoft.AspNetCore.Mvc;
 using CajaAhorrosBackend.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 // using System.Security.Claims;
 // using System.Text;
 
@@ -75,7 +76,7 @@ namespace CajaAhorrosBackend.Services
                 if (cuentaExiste != null)
                 {
                     var DuenioCuenta = await _context.Clientes.FirstOrDefaultAsync(c => c.IdCliente == cuentaExiste.IdUsuario);
-                    return Ok(new { success = true, dataRes = DuenioCuenta.Apellido + " " + DuenioCuenta.Nombre });
+                    return Ok(new { success = true, dataRes = DuenioCuenta?.Apellido + " " + DuenioCuenta?.Nombre });
                 }
 
                 return Ok(new { success = false, message = "La cuenta no existe o esta temporalmente desabilidata." });
@@ -159,9 +160,34 @@ namespace CajaAhorrosBackend.Services
                 || cuentasDelUsuario.Select(c => c.NumeroCuenta).Contains(t.IdCuentaDestino))
                 .ToListAsync();
 
-            return Ok(new { success = true,  cuentasDelUsuario, historial });
+            return Ok(new { success = true, cuentasDelUsuario, historial });
         }
 
+        public async Task<IActionResult> HistorialTransaccionesFilter(int userId, TransactionFilterRequest filterData)
+        {
+            if (userId < 1)
+            {
+                return Ok(new { success = false, message = "El ID de usuario debe ser mayor a 0." });
+            }
+
+            var cliente = await _context.Clientes.FirstOrDefaultAsync(c => c.IdCliente == userId);
+
+
+            if (cliente == null)
+            {
+                return Ok(new { success = false, message = "No se encontraron cuentas para el usuario de usuario especificado." });
+            }
+
+            var DateSelect = DateTime.ParseExact(filterData.DateFilter, "yyyy-MM-dd", CultureInfo.InvariantCulture).ToUniversalTime();
+            var historial = await _context.Transacciones
+                            .Where(t => 
+                            t.FechaTransaccion.ToUniversalTime().Date == DateSelect.Date &
+                            (t.IdCuentaOrigen == filterData.AccountFilter | t.IdCuentaDestino == filterData.AccountFilter)
+                             )
+                            .ToListAsync();
+
+            return Ok(new { success = true, historial });
+        }
 
 
 

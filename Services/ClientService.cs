@@ -50,7 +50,7 @@ namespace CajaAhorrosBackend.Services
             var cliente = await _context.Clientes.FirstOrDefaultAsync(c => c.CorreoElectronico == request.CorreoElectronico);
             if (cliente == null || !_passwordService.VerifyPassword(cliente.Password, request.Password))
             {
-                return Unauthorized(new { success = false, message = "Correo o contraseña incorrectos", comparacion = $"el correo {cliente.CorreoElectronico}" });
+                return Unauthorized(new { success = false, message = "Correo o contraseña incorrectos", comparacion = $"el correo {cliente?.CorreoElectronico}" });
             }
 
             cliente.UltimaFechaLogin = DateTime.UtcNow;

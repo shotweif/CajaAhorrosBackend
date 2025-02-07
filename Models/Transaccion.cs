@@ -15,4 +15,10 @@ namespace CajaAhorrosBackend.Models
 
         public DateTime FechaTransaccion { get; set; }
     }
+
+    public class TransactionFilterRequest
+    {
+        public string DateFilter { get; set; }
+        public string AccountFilter { get; set; }
+    }
 }
