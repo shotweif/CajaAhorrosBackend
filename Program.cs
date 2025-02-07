@@ -12,67 +12,66 @@ var builder = WebApplication.CreateBuilder(args);
 var keyVal = "ClaveSuper$ecreta123456789_ABCDEFGHIJKLMN";
 var key = Encoding.UTF8.GetBytes(keyVal);
 
-// builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-//     .AddJwtBearer(options =>
-//     {
-//         options.TokenValidationParameters = new TokenValidationParameters
-//         {
-//             ValidateIssuer = true,
-//             ValidateAudience = false,
-//             ValidateLifetime = false,
-//             ValidateIssuerSigningKey = true,
-//             ValidIssuer = "CajaAhorrosBackend",
-//             ValidAudience = "CajaAhorrosBackend",
-//             IssuerSigningKey = new SymmetricSecurityKey(key)
-//         };
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = false,
+            ValidateLifetime = false,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = "CajaAhorrosBackend",
+            ValidAudience = "CajaAhorrosBackend",
+            IssuerSigningKey = new SymmetricSecurityKey(key)
+        };
 
+        // Añade esto para depuración
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                Console.WriteLine("OnAuthenticationFailed: " + context.Exception.Message);
 
-//         // Añade esto para depuración
-//         options.Events = new JwtBearerEvents
-//         {
-//             OnAuthenticationFailed = context =>
-//             {
-//                 Console.WriteLine("OnAuthenticationFailed: " + context.Exception.Message);
+                if (context.Exception is SecurityTokenInvalidSignatureException)
+                {
+                    Console.WriteLine("La firma del token es inválida.");
+                }
+                else if (context.Exception is SecurityTokenExpiredException)
+                {
+                    Console.WriteLine("El token ha expirado.");
+                }
+                else if (context.Exception is SecurityTokenInvalidAudienceException)
+                {
+                    Console.WriteLine("El público (audience) del token no es válido.");
+                }
+                else if (context.Exception is SecurityTokenInvalidIssuerException)
+                {
+                    Console.WriteLine("El emisor (issuer) del token no es válido.");
+                }
 
-//                 if (context.Exception is SecurityTokenInvalidSignatureException)
-//                 {
-//                     Console.WriteLine("La firma del token es inválida.");
-//                 }
-//                 else if (context.Exception is SecurityTokenExpiredException)
-//                 {
-//                     Console.WriteLine("El token ha expirado.");
-//                 }
-//                 else if (context.Exception is SecurityTokenInvalidAudienceException)
-//                 {
-//                     Console.WriteLine("El público (audience) del token no es válido.");
-//                 }
-//                 else if (context.Exception is SecurityTokenInvalidIssuerException)
-//                 {
-//                     Console.WriteLine("El emisor (issuer) del token no es válido.");
-//                 }
-
-//                 return Task.CompletedTask;
-//             },
-//             OnTokenValidated = context =>
-//             {
-//                 Console.WriteLine("OnTokenValidated: " + context.SecurityToken);
-//                 return Task.CompletedTask;
-//             },
-//             OnMessageReceived = context =>
-//             {
-//                 if (string.IsNullOrEmpty(context.Token))
-//                 {
-//                     // Busca el token en un parámetro de consulta
-//                     var token = context.Request.Query["access_token"];
-//                     if (!string.IsNullOrEmpty(token))
-//                     {
-//                         context.Token = token;
-//                     }
-//                 }
-//                 return Task.CompletedTask;
-//             }
-//         };
-//     });
+                return Task.CompletedTask;
+            },
+            OnTokenValidated = context =>
+            {
+                Console.WriteLine("OnTokenValidated: " + context.SecurityToken);
+                return Task.CompletedTask;
+            },
+            OnMessageReceived = context =>
+            {
+                if (string.IsNullOrEmpty(context.Token))
+                {
+                    // Busca el token en un parámetro de consulta
+                    var token = context.Request.Query["access_token"];
+                    if (!string.IsNullOrEmpty(token))
+                    {
+                        context.Token = token;
+                    }
+                }
+                return Task.CompletedTask;
+            }
+        };
+    });
 
 builder.Services.AddAuthorization();
 builder.Services.AddSingleton(new TokenService(key));
@@ -98,22 +97,22 @@ builder.Services.AddCors(options =>
 });
 
 // Habilita los endpoints para Swagger
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options =>
-{
-    options.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Version = "v1",
-        Title = "CajaAhorros API",
-        Description = "Documentación de la API para el proyecto CajaAhorrosBackend",
-        Contact = new OpenApiContact
-        {
-            Name = "Equipo de Desarrollo",
-            Email = "contacto@ejemplo.com",
-            Url = new Uri("https://ejemplo.com")
-        },
-    });
-});
+// builder.Services.AddEndpointsApiExplorer();
+// builder.Services.AddSwaggerGen(options =>
+// {
+//     options.SwaggerDoc("v1", new OpenApiInfo
+//     {
+//         Version = "v1",
+//         Title = "CajaAhorros API",
+//         Description = "Documentación de la API para el proyecto CajaAhorrosBackend",
+//         Contact = new OpenApiContact
+//         {
+//             Name = "Equipo de Desarrollo",
+//             Email = "contacto@ejemplo.com",
+//             Url = new Uri("https://ejemplo.com")
+//         },
+//     });
+// });
 
 var app = builder.Build();
 
@@ -128,7 +127,14 @@ var app = builder.Build();
 //     });
 // }
 
-app.UseCors();
+// app.UseCors();
+app.UseCors(builder =>
+{
+    builder.AllowAnyOrigin()
+           .AllowAnyHeader()
+           .AllowAnyMethod();
+});
+
 
 // app.Use(async (context, next) =>
 // {
@@ -150,8 +156,8 @@ app.UseCors();
 
 app.UseRouting();
 
-// app.UseAuthentication(); // Habilitar autenticación
-// app.UseAuthorization();  // Habilitar autorización
+app.UseAuthentication(); // Habilitar autenticación
+app.UseAuthorization();  // Habilitar autorización
 
 app.MapControllers();
 

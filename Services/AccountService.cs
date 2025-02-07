@@ -189,9 +189,6 @@ namespace CajaAhorrosBackend.Services
             return Ok(new { success = true, historial });
         }
 
-
-
-
     }
 
 }
