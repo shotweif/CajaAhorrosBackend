@@ -88,7 +88,6 @@ namespace CajaAhorrosBackend.Controllers
             }
         }
 
-
         [HttpPost("CrearCuenta/{userId}")]
         public async Task<IActionResult> CrearCuenta(int userId)
         {
@@ -137,8 +136,9 @@ namespace CajaAhorrosBackend.Controllers
         public async Task<IActionResult> ValidatCuenta(string accountNumber)
         {
             Console.WriteLine(accountNumber);
-            if(accountNumber.Length < 1){
-                    return Unauthorized(new { message = "Numero de cuenta no valido." });
+            if (accountNumber.Length < 1)
+            {
+                return Unauthorized(new { message = "Numero de cuenta no valido." });
             }
             try
             {
@@ -161,13 +161,28 @@ namespace CajaAhorrosBackend.Controllers
                 // {
                 //     return BadRequest(ModelState);
                 // }
-                
+
                 var result = await _cuenta.TransferirFondos(transferencia);
                 return result;
                 // return Ok(new { success = true, message = "Transferencia realizada exitosamente.", transferencia });
 
                 // Procesar la transferencia
                 // return Ok($"Transferencia realizada con éxito.");
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error starting the proces: {ex.Message}");
+                return StatusCode(500, new { Message = "An error occured while starting the process" });
+            }
+        }
+
+        [HttpGet("SummaryTransactions/{userId}")]
+        public async Task<IActionResult> SummaryTransaction(int userId)
+        {
+            try
+            {
+                var result = await _cuenta.HistorialTransacciones(userId);
+                return result;
             }
             catch (Exception ex)
             {

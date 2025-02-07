@@ -75,7 +75,7 @@ namespace CajaAhorrosBackend.Services
                 if (cuentaExiste != null)
                 {
                     var DuenioCuenta = await _context.Clientes.FirstOrDefaultAsync(c => c.IdCliente == cuentaExiste.IdUsuario);
-                    return Ok(new { success = true, dataRes = DuenioCuenta.Apellido+" "+DuenioCuenta.Nombre });
+                    return Ok(new { success = true, dataRes = DuenioCuenta.Apellido + " " + DuenioCuenta.Nombre });
                 }
 
                 return Ok(new { success = false, message = "La cuenta no existe o esta temporalmente desabilidata." });
@@ -132,6 +132,40 @@ namespace CajaAhorrosBackend.Services
 
             return Ok(new { success = true, message = "Transferencia realizada exitosamente.", dataRes = FechaMovimiento, newTransferenciaId });
         }
+
+        public async Task<IActionResult> HistorialTransacciones(int userId)
+        {
+            if (userId < 1)
+            {
+                return Ok(new { success = false, message = "El ID de usuario debe ser mayor a 0." });
+            }
+
+            var cuentasDelUsuario = await _context.CuentasAhorro
+                .Where(c => c.IdUsuario == userId)
+                .Select(c => new
+                {
+                    IdCuenta = c.IdCuenta,
+                    NumeroCuenta = c.NumeroCuenta
+                })
+                .ToListAsync();
+
+            if (!cuentasDelUsuario.Any())
+            {
+                return Ok(new { success = false, message = "No se encontraron cuentas para el ID de usuario especificado." });
+            }
+
+            var historial = await _context.Transacciones
+                .Where(t => cuentasDelUsuario.Select(c => c.NumeroCuenta).Contains(t.IdCuentaOrigen)
+                || cuentasDelUsuario.Select(c => c.NumeroCuenta).Contains(t.IdCuentaDestino))
+                .ToListAsync();
+
+            return Ok(new { success = true,  cuentasDelUsuario, historial });
+        }
+
+
+
+
+
     }
 
 }
