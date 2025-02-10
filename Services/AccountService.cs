@@ -88,6 +88,7 @@ namespace CajaAhorrosBackend.Services
                 return Ok(new { message = "Error al crear el cliente: ", ex });
             }
         }
+
         public async Task<IActionResult> TransferirFondos(TransferenciaDto transferencia)
         {
             var cuentaOrigen = await _context.CuentasAhorro.FirstOrDefaultAsync(c => c.NumeroCuenta == transferencia.IdCuentaOrigen);
@@ -158,6 +159,15 @@ namespace CajaAhorrosBackend.Services
             var historial = await _context.Transacciones
                 .Where(t => cuentasDelUsuario.Select(c => c.NumeroCuenta).Contains(t.IdCuentaOrigen)
                 || cuentasDelUsuario.Select(c => c.NumeroCuenta).Contains(t.IdCuentaDestino))
+                .Select(t => new
+                {
+                    t.IdCuentaOrigen,
+                    t.IdCuentaDestino,
+                    t.Monto,
+                    t.FechaTransaccion,
+                    NombreCuentaOrigen = _context.CuentasAhorro.FirstOrDefault(c => c.NumeroCuenta == t.IdCuentaOrigen).Cliente, // Asegúrate de que la propiedad Nombre exista
+                    NombreCuentaDestino = _context.CuentasAhorro.FirstOrDefault(c => c.NumeroCuenta == t.IdCuentaDestino).Cliente // Asegúrate de que la propiedad Nombre exista
+                })
                 .ToListAsync();
 
             return Ok(new { success = true, cuentasDelUsuario, historial });
@@ -180,11 +190,19 @@ namespace CajaAhorrosBackend.Services
 
             var DateSelect = DateTime.ParseExact(filterData.DateFilter, "yyyy-MM-dd", CultureInfo.InvariantCulture).ToUniversalTime();
             var historial = await _context.Transacciones
-                            .Where(t => 
-                            t.FechaTransaccion.ToUniversalTime().Date == DateSelect.Date &
-                            (t.IdCuentaOrigen == filterData.AccountFilter | t.IdCuentaDestino == filterData.AccountFilter)
-                             )
-                            .ToListAsync();
+                .Where(t => t.FechaTransaccion.ToUniversalTime().Date == DateSelect.Date &
+                (t.IdCuentaOrigen == filterData.AccountFilter | t.IdCuentaDestino == filterData.AccountFilter))
+                .Select(t => new
+                {
+                    IdTransaccion = t.IdTransaccion,
+                    t.IdCuentaOrigen,
+                    t.IdCuentaDestino,
+                    t.Monto,
+                    t.FechaTransaccion,
+                    NombreCuentaOrigen = _context.CuentasAhorro.FirstOrDefault(c => c.NumeroCuenta == t.IdCuentaOrigen).Cliente, // Asegúrate de que la propiedad Nombre exista
+                    NombreCuentaDestino = _context.CuentasAhorro.FirstOrDefault(c => c.NumeroCuenta == t.IdCuentaDestino).Cliente // Asegúrate de que la propiedad Nombre exista
+                })
+                .ToListAsync();
 
             return Ok(new { success = true, historial });
         }

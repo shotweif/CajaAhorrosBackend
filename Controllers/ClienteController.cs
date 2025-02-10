@@ -83,6 +83,21 @@ namespace CajaAhorrosBackend.Controllers
             }
         }
 
+        [HttpGet("AdminConsultation/{concultation}")]
+        public async Task<IActionResult> GetProfilesConsultation(string concultation)
+        {
+            try
+            {
+                var result = await _cliente.UserProfileConsultation(concultation);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error starting the proces: {ex.Message}");
+                return StatusCode(500, new { Message = "An error occured while starting the process" });
+            }
+        }
+
         [Authorize]
         [HttpGet]
         public IActionResult GetProtectedData()

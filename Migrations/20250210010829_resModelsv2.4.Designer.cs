@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CajaAhorrosBackend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250119021053_RenameColumnsInTransaccionId")]
-    partial class RenameColumnsInTransaccionId
+    [Migration("20250210010829_resModelsv2.4")]
+    partial class resModelsv24
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,6 +32,9 @@ namespace CajaAhorrosBackend.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdCliente"));
+
+                    b.Property<string>("Apellido")
+                        .HasColumnType("text");
 
                     b.Property<string>("CorreoElectronico")
                         .IsRequired()
@@ -97,11 +100,13 @@ namespace CajaAhorrosBackend.Migrations
                     b.Property<DateTime>("FechaTransaccion")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("IdCuentaDestino")
-                        .HasColumnType("integer");
+                    b.Property<string>("IdCuentaDestino")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.Property<int>("IdCuentaOrigen")
-                        .HasColumnType("integer");
+                    b.Property<string>("IdCuentaOrigen")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<float>("Monto")
                         .HasColumnType("real");

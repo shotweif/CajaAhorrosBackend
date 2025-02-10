@@ -135,6 +135,7 @@ namespace CajaAhorrosBackend.Controllers
             }
         }
 
+
         [Authorize]
         [HttpGet]
         public IActionResult GetProtectedData()

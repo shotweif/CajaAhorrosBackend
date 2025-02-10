@@ -74,6 +74,23 @@ namespace CajaAhorrosBackend.Services
 
             // Retornar el perfil del usuario
             return Ok(new
+            {
+                cliente.IdCliente,
+                cliente.CorreoElectronico,
+                cliente.Nombre,
+                cliente.Phone,
+                cliente.Apellido,
+                cliente.Rol,
+                cliente.UltimaFechaLogin
+            });
+        }
+
+        public async Task<IActionResult> UserProfileConsultation(string concultation)
+        {
+            if (concultation == "users")
+            {
+                var consultasAdmin = await _context.Clientes
+                .Select(cliente => new
                 {
                     cliente.IdCliente,
                     cliente.CorreoElectronico,
@@ -81,8 +98,30 @@ namespace CajaAhorrosBackend.Services
                     cliente.Phone,
                     cliente.Apellido,
                     cliente.Rol,
-                    cliente.UltimaFechaLogin
-                });
+                    cliente.UltimaFechaLogin,
+                    numCuentas = _context.CuentasAhorro.Count(c => c.IdUsuario == cliente.IdCliente) // Contar cuentas por cliente
+                })
+                .ToListAsync(); // Obtener todos los clientes con el número de cuentas
+
+                return Ok(consultasAdmin); // Retornar la lista de clientes
+            }
+            else
+            {
+                var consultasAdmin = await _context.CuentasAhorro
+                .Select(cuenta => new
+                {
+                    cuenta.Activo,
+                    cuenta.IdCuenta,
+                    cuenta.Cliente,
+                    cuenta.Saldo,
+                    cuenta.NumeroCuenta
+                })
+                .ToListAsync(); // Obtener todos los clientes con el número de cuentas
+
+                return Ok(consultasAdmin); // Retornar la lista de clientes
+            }
         }
+    
+        
     }
 }

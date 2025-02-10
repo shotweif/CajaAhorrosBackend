@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CajaAhorrosBackend.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class resModelsv24 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,28 +19,16 @@ namespace CajaAhorrosBackend.Migrations
                     IdCliente = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Nombre = table.Column<string>(type: "text", nullable: true),
+                    Apellido = table.Column<string>(type: "text", nullable: true),
                     Phone = table.Column<string>(type: "text", nullable: true),
                     CorreoElectronico = table.Column<string>(type: "text", nullable: false),
                     Password = table.Column<string>(type: "text", nullable: false),
-                    Rol = table.Column<string>(type: "text", nullable: false)
+                    UltimaFechaLogin = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    Rol = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Clientes", x => x.IdCliente);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "CuentasAhorro",
-                columns: table => new
-                {
-                    IdCuenta = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Saldo = table.Column<float>(type: "real", nullable: false),
-                    IdUsuario = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CuentasAhorro", x => x.IdCuenta);
                 });
 
             migrationBuilder.CreateTable(
@@ -49,8 +37,8 @@ namespace CajaAhorrosBackend.Migrations
                 {
                     IdTransaccion = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    IdCuenta = table.Column<int>(type: "integer", nullable: false),
-                    TipoTransaccion = table.Column<int>(type: "integer", nullable: false),
+                    IdCuentaOrigen = table.Column<string>(type: "text", nullable: false),
+                    IdCuentaDestino = table.Column<string>(type: "text", nullable: false),
                     Monto = table.Column<float>(type: "real", nullable: false),
                     FechaTransaccion = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -58,19 +46,46 @@ namespace CajaAhorrosBackend.Migrations
                 {
                     table.PrimaryKey("PK_Transacciones", x => x.IdTransaccion);
                 });
+
+            migrationBuilder.CreateTable(
+                name: "CuentasAhorro",
+                columns: table => new
+                {
+                    IdCuenta = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    NumeroCuenta = table.Column<string>(type: "text", nullable: false),
+                    Saldo = table.Column<float>(type: "real", nullable: false),
+                    IdUsuario = table.Column<int>(type: "integer", nullable: false),
+                    Activo = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CuentasAhorro", x => x.IdCuenta);
+                    table.ForeignKey(
+                        name: "FK_CuentasAhorro_Clientes_IdUsuario",
+                        column: x => x.IdUsuario,
+                        principalTable: "Clientes",
+                        principalColumn: "IdCliente",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CuentasAhorro_IdUsuario",
+                table: "CuentasAhorro",
+                column: "IdUsuario");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Clientes");
-
-            migrationBuilder.DropTable(
                 name: "CuentasAhorro");
 
             migrationBuilder.DropTable(
                 name: "Transacciones");
+
+            migrationBuilder.DropTable(
+                name: "Clientes");
         }
     }
 }
